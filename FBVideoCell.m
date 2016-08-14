@@ -36,41 +36,35 @@
         self.title = [[UILabel alloc] init];
         [self.contentView addSubview:self.title];
         [self.title setNumberOfLines:2];
-        self.title.lineBreakMode = NSLineBreakByTruncatingTail;
+        self.title.lineBreakMode = NSLineBreakByWordWrapping; // A vérifier.
         
         self.descr = [[UILabel alloc] init];
         [self. contentView addSubview:self.descr];
-        [self.descr setNumberOfLines:0];
-        self.descr.lineBreakMode = NSLineBreakByTruncatingTail;
+        [self.descr setNumberOfLines:3];
+        self.descr.lineBreakMode = NSLineBreakByWordWrapping;
+        
+        [self.videoView mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.top.equalTo(@10);
+            make.left.equalTo(@10);
+            make.height.equalTo(@100);
+            //make.bottom.equalTo(@(-10));
+            make.width.equalTo(@100);
+        }];
+        
+        [self.title mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.top.equalTo(@10);
+            make.left.equalTo(self.videoView.mas_right).offset(10);
+            make.right.equalTo(@(-10));
+        }];
+        
+        [self.descr mas_remakeConstraints:^(MASConstraintMaker *make) {
+            make.top.equalTo(self.title.mas_bottom).offset (10);
+            make.left.equalTo(self.videoView.mas_right).offset(10);
+            make.right.equalTo(@(-10));
+            make.bottom.equalTo(@(-10));
+        }];
     }
     return self;
-}
-
--(void) updateConstraints
-{
-    [super updateConstraints];
-    
-    for (MASConstraint *constraint in [MASViewConstraint installedConstraintsForView:self.videoView])
-        [constraint uninstall];
-    
-    [self.videoView mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(@10);
-        make.left.equalTo(@10);
-        make.height.equalTo(@100);
-        make.width.equalTo(@100);
-    }];
-    
-    [self.title mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(@10);
-        make.left.equalTo(self.videoView.mas_right).offset(10);
-        make.right.equalTo(@(-10));
-    }];
-    
-    [self.descr mas_remakeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(self.title.mas_bottom).offset (10);
-        make.left.equalTo(self.videoView.mas_right).offset(10);
-        make.right.equalTo(@(-10));
-    }];
 }
 
 -(void)setVideo:(FBYTVideo *)video{
@@ -79,7 +73,22 @@
     
     [self.videoView loadWithVideoId:self.video.videoID];
     
-    [self setNeedsUpdateConstraints];
+    NSAttributedString *attrTitle =
+    [[NSAttributedString alloc] initWithString:self.video.title
+                                    attributes:@{NSForegroundColorAttributeName:[UIColor blackColor],
+                                                 NSFontAttributeName:[UIFont systemFontOfSize:14]}];
+    
+    NSAttributedString *attrDescr =
+    [[NSAttributedString alloc] initWithString:[[NSString alloc] initWithFormat:@"@%@",self.video.descr]
+                                    attributes:@{NSForegroundColorAttributeName:[UIColor grayColor],
+                                                 NSFontAttributeName:[UIFont systemFontOfSize:12]}];
+    
+    /*NSMutableAttributedString *attrCellText = [[NSMutableAttributedString alloc] init];
+    [attrCellText appendAttributedString:attrTitle];
+    [attrCellText appendAttributedString:attrDescr];*/
+    
+    [self.title setAttributedText:attrTitle];
+    [self.descr setAttributedText:attrDescr];
 }
 
 - (void)layoutIfNeeded

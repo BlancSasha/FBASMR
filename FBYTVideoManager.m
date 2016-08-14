@@ -54,9 +54,10 @@
                                     @"type":@"video",
                                     @"videoDefinition":@"high",
                                     @"videoEmbeddable":@"true",
+                                    @"q":@"asmr",
+                                    @"maxResults":@(10),
                                     @"key":MY_API_KEY,
                                     };
-#warning pas de limite de video dans les paramètres? ils sont à modifier pour correspondre à ce que je veux
     
     [self.manager GET:@"https://www.googleapis.com/youtube/v3/search"
            parameters:getParameters
